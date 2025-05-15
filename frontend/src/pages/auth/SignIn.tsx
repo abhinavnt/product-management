@@ -1,8 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SignInForm } from "../../components/auth/Sign-in-form";
-
+import { useEffect } from "react";
 
 export default function SignInPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    
+    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+    
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   return (
     <div className="flex min-h-screen">
       {/* Left side - Sign In Form */}
@@ -28,5 +39,5 @@ export default function SignInPage() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

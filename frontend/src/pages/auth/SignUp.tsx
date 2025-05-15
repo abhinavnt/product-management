@@ -1,8 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SignUpForm } from "../../components/auth/Sign-up-form";
+import { useEffect } from "react";
 
 
 export default function SignUpPage() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+
+    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [navigate]);
+
+
   return (
     <div className="flex min-h-screen">
       {/* Left side - CTA */}

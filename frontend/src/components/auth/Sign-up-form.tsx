@@ -5,6 +5,7 @@ import { z } from "zod"
 import { EmailIcon, PasswordIcon, UserIcon } from "./Auth-icons"
 import { AuthForm } from "./Auth-form"
 import { registerUser } from "../../services/authService"
+import { useNavigate } from "react-router-dom"
 
 
 // Validation schemas
@@ -15,6 +16,8 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 export function SignUpForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | undefined>()
+
+  const navigate = useNavigate()
 
   const handleSignUp = async (data: Record<string, string>) => {
     setIsSubmitting(true)
@@ -28,8 +31,8 @@ export function SignUpForm() {
         const errorData = response?.data
         throw new Error(errorData?.message || "Failed to sign up")
       }
-      // Redirect or handle successful sign-up
-      window.location.href = "/welcome"
+      // Redirect to home page
+      navigate("/")
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred during sign up")
     } finally {
