@@ -6,7 +6,9 @@ import connectDB from "./config/db";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import path from "path";
+import { errorHandler } from "./middlewares/errorMiddleware";
 const rfs = require("rotating-file-stream");
+import authRoutes from "./routes/auth.route" 
 
 dotenv.config();
 connectDB();
@@ -46,5 +48,11 @@ app.use(
   })
 );
 
+
+app.use("/api/auth", authRoutes);
+
+
+
+app.use(errorHandler);
 
 export default app;
