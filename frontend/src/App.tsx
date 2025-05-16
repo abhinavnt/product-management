@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "./redux/store";
 import { refreshToken } from "./services/authService";
+import { Toaster } from "sonner";
 
 function App() {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <Toaster richColors  />
         <Routes>
           <Route path="/login" element={<SignInPage />} />
           <Route path="/signUp" element={<SignUpPage />} />

@@ -44,3 +44,6 @@
 ::1 - - [15/May/2025:16:04:50 +0000] "POST /api/auth/refresh-token HTTP/1.1" 403 35 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [15/May/2025:16:12:38 +0000] "POST /api/auth/refresh-token HTTP/1.1" 403 35 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 ::1 - - [15/May/2025:16:12:59 +0000] "POST /api/auth/refresh-token HTTP/1.1" 403 35 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [16/May/2025:06:09:31 +0000] "POST /api/auth/refresh-token HTTP/1.1" 500 47 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [16/May/2025:07:10:25 +0000] "POST /api/auth/login HTTP/1.1" 500 32 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+::1 - - [16/May/2025:07:10:31 +0000] "POST /api/auth/login HTTP/1.1" 500 32 "http://localhost:5173/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
