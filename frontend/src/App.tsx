@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "./redux/store";
 import { refreshToken } from "./services/authService";
 import { Toaster } from "sonner";
+import ProductDetailPage from "./pages/ProductDetials";
+import ProductDetials from "./pages/ProductDetials";
 
 function App() {
   const dispatch = useDispatch();
@@ -53,6 +55,7 @@ function App() {
           <Route path="/login" element={<SignInPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
           <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetials />} />
         </Routes>
       </BrowserRouter>
     </>

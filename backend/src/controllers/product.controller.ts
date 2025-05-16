@@ -3,8 +3,10 @@ import { IProductController } from "../core/interface/controller/IProductControl
 import { TYPES } from "../di/types";
 import { IProductService } from "../core/interface/service/IProductService";
 import asyncHandler from "express-async-handler";
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { uploadToCloudinary } from "../config/cloudinary";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 @injectable()
 export class ProductController implements IProductController{
@@ -39,4 +41,18 @@ export class ProductController implements IProductController{
     res.status(201).json(product);
   })
 
+  getProducts=asyncHandler(async(req:Request,res:Response):Promise<void>=>{
+     const page = parseInt(req.query.page as string) || 1;
+    const perPage = parseInt(req.query.perPage as string) || 10;
+    const subcategories = req.query.subcategories ? (req.query.subcategories as string).split(',') : [];
+    const search = req.query.search as string || '';
+    const { products, totalCount } = await this.productService.getProducts(page, perPage, subcategories, search);
+    res.json({ products, totalCount, page, perPage });
+  })
+
+  getProductById=asyncHandler(async(req:Request,res:Response):Promise<void>=>{
+    const { id } = req.params;
+      const product = await this.productService.getProductById(id);
+      res.status(200).json(product);
+  })
 }

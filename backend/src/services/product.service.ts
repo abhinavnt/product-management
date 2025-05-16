@@ -72,4 +72,20 @@ export class ProductService implements IProductService {
     // Call the repository method
     return await this.productRepository.createProduct(productData);
   }
+
+  async getProducts(page: number, perPage: number, subcategories: string[], search: string): Promise<{ products: IProduct[]; totalCount: number }> {
+    return await this.productRepository.getProducts(page, perPage, subcategories, search);
+  }
+
+  async getProductById(id: string): Promise<IProduct | null> {
+      try {
+        const product = await this.productRepository.findProductById(id);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    return product;
+      } catch (error) {
+        throw new Error(error instanceof Error ? error.message : String(error));
+      }
+  }
 }
