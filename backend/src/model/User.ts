@@ -1,7 +1,8 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export interface IUser extends Document {
+  _id:ObjectId
   name: string;
   email: string;
   password: string;

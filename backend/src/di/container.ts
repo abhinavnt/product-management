@@ -18,6 +18,12 @@ import { IProductService } from "../core/interface/service/IProductService";
 import { ProductService } from "../services/product.service";
 import { IProductController } from "../core/interface/controller/IProductController";
 import { ProductController } from "../controllers/product.controller";
+import { IWishlistRepository } from "../core/interface/repository/IWishlistReposiotry";
+import { WishlistRepository } from "../repositories/wishlist.repository";
+import { IWishlistService } from "../core/interface/service/IWishlistService";
+import { WishlistService } from "../services/wishlist.service";
+import { IWishlistController } from "../core/interface/controller/IWishlistController";
+import { WishlistController } from "../controllers/wishlist.controller";
 
 
 
@@ -37,6 +43,10 @@ container.bind<ICategoryController>(TYPES.CategoryController).to(CategoryControl
 container.bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository)
 container.bind<IProductService>(TYPES.ProductService).to(ProductService)
 container.bind<IProductController>(TYPES.ProductController).to(ProductController)
+
+container.bind<IWishlistRepository>(TYPES.WishlistRepository).to(WishlistRepository)
+container.bind<IWishlistService>(TYPES.WishlistService).to(WishlistService)
+container.bind<IWishlistController>(TYPES.WishlistController).to(WishlistController)
 
 
 export default container

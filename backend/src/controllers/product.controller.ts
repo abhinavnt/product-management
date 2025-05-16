@@ -3,16 +3,17 @@ import { IProductController } from "../core/interface/controller/IProductControl
 import { TYPES } from "../di/types";
 import { IProductService } from "../core/interface/service/IProductService";
 import asyncHandler from "express-async-handler";
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { uploadToCloudinary } from "../config/cloudinary";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 @injectable()
-export class ProductController implements IProductController{
-  constructor(@inject(TYPES.ProductService) private productService: IProductService){}
+export class ProductController implements IProductController {
+  constructor(@inject(TYPES.ProductService) private productService: IProductService) {}
 
-
-  addProduct=asyncHandler(async(req:Request,res:Response):Promise<void>=>{
-   const { title, description, subcategory, variants } = req.body;
+  addProduct = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { title, description, subcategory, variants } = req.body;
     const imageFiles = req.files as Express.Multer.File[];
 
     if (!imageFiles || imageFiles.length === 0) {
@@ -37,6 +38,54 @@ export class ProductController implements IProductController{
     });
 
     res.status(201).json(product);
-  })
+  });
 
+  getProducts = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const page = parseInt(req.query.page as string) || 1;
+    const perPage = parseInt(req.query.perPage as string) || 10;
+    const subcategories = req.query.subcategories ? (req.query.subcategories as string).split(",") : [];
+    const search = (req.query.search as string) || "";
+    const { products, totalCount } = await this.productService.getProducts(page, perPage, subcategories, search);
+    res.json({ products, totalCount, page, perPage });
+  });
+
+  getProductById = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const product = await this.productService.getProductById(id);
+    res.status(200).json(product);
+  });
+
+ updateProduct = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { title, description, subcategory, variants, removedImages } = req.body;
+  const newImageFiles = req.files as Express.Multer.File[];
+
+  console.log("req.files:", req.files); 
+
+  let newImageUrls: string[] = [];
+  if (newImageFiles && newImageFiles.length > 0) {
+    newImageUrls = await Promise.all(
+      newImageFiles.map(async (file) => {
+        const url = await uploadToCloudinary(file.buffer, file.mimetype, "product_images");
+        console.log("Uploaded image URL:", url);
+        return url;
+      })
+    );
+  }
+
+  const parsedVariants = typeof variants === "string" ? JSON.parse(variants) : variants;
+  const parsedRemovedImages = typeof removedImages === "string" ? JSON.parse(removedImages) : removedImages;
+
+  const updateData = {
+    title,
+    description,
+    subcategory,
+    variants: parsedVariants,
+    removedImages: parsedRemovedImages,
+    newImages: newImageUrls,
+  };
+
+  const updatedProduct = await this.productService.updateProduct(id, updateData);
+  res.status(200).json(updatedProduct);
+});
 }

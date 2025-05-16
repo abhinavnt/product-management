@@ -1,51 +1,95 @@
+import { useState, useEffect } from 'react';
 
-import { dummyProducts } from "@/data/products"
-import type { Product } from "@/types/product"
-import { X } from "lucide-react"
-
+import type { Product } from '@/types/product';
+import { X } from 'lucide-react';
+import axiosInstance from '@/utils/axiosInstance';
+import { useSelector } from 'react-redux';
 
 interface WishlistSidebarProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function WishlistSidebar({ isOpen, onClose }: WishlistSidebarProps) {
-  // For demo, just use the first two products as wishlist items
-  const wishlistItems = dummyProducts.slice(0, 2)
+  const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!isOpen) return null
+  const user = useSelector((state: any) => state.auth.user);
+
+  const fetchWishlistProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get(`api/wishlist/products/${user._id}`);
+      console.log(response.data.products,"hello from ");
+      
+      setWishlistItems(response.data.products);
+    } catch (err) {
+      setError('Failed to fetch wishlist products');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchWishlistProducts();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white shadow-lg flex flex-col h-full">
         <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="font-semibold">Items</h2>
+          <h2 className="font-semibold">Wishlist Items</h2>
           <button onClick={onClose}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          {wishlistItems.map((item) => (
-            <WishlistItem key={item.id} product={item} />
+          {loading && <p>Loading...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+          {!loading && !error && wishlistItems.length === 0 && <p>Your wishlist is empty.</p>}
+          {wishlistItems.map((item,index) => (
+            <WishlistItem key={index} userId={user._id} product={item} onRemove={fetchWishlistProducts} />
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface WishlistItemProps {
-  product: Product
+  product: Product;
+  userId: string;
+  onRemove: () => void;
 }
 
-function WishlistItem({ product }: WishlistItemProps) {
+function WishlistItem({ product, userId, onRemove }: WishlistItemProps) {
+
+  console.log(product,"product itertain");
+  
+
+  const handleRemove = async () => {
+    try {
+      await axiosInstance.delete(`/api/wishlist/${product._id}/${userId}`);
+      onRemove();
+    } catch (error) {
+      console.error('Failed to remove from wishlist', error);
+    }
+  };
+
   return (
     <div className="flex items-center p-2 border rounded-lg mb-3">
       <div className="flex-shrink-0 mr-4">
         <img
-          src={product.image || "/placeholder.svg"}
+          src={product.images[0] || "/placeholder.svg"}
           alt={product.title}
           width={80}
           height={80}
@@ -54,8 +98,8 @@ function WishlistItem({ product }: WishlistItemProps) {
       </div>
 
       <div className="flex-1">
-        <h3 className="text-sm font-medium">{product.title}</h3>
-        <div className="text-sm font-semibold mt-1">${product.price.toFixed(2)}</div>
+        <h3 className="text-sm text-black font-medium">{product.title}</h3>
+        {/* <div className="text-sm text-black font-semibold mt-1">${product.price}</div> */}
         <div className="flex mt-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <svg
@@ -70,9 +114,9 @@ function WishlistItem({ product }: WishlistItemProps) {
         </div>
       </div>
 
-      <button className="ml-2 text-gray-400 hover:text-gray-600">
+      <button onClick={handleRemove} className="ml-2 text-gray-400 hover:text-gray-600">
         <X className="h-5 w-5" />
       </button>
     </div>
-  )
+  );
 }

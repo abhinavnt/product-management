@@ -1,57 +1,60 @@
-
-
-import { Heart, ShoppingCart, User } from "lucide-react"
-
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Link, useNavigate } from "react-router-dom"
-import { WishlistSidebar } from "../sidebar/Wishlist-sidebar"
-import { userLogout } from "@/services/authService"
-import { useDispatch, useSelector } from "react-redux"
+import { Heart, ShoppingCart, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Link, useNavigate } from "react-router-dom";
+import { WishlistSidebar } from "../sidebar/Wishlist-sidebar";
+import { userLogout } from "@/services/authService";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchTerm } from "@/redux/features/productsSlice";
 
 export function Header() {
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false)
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [logoutTrigger, setLogoutTrigger] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
 
-  const dispactch = useDispatch()
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const user = useSelector((state: any) => state.auth.user)
+  const user = useSelector((state: any) => state.auth.user);
 
   console.log("user", user);
 
-
   useEffect(() => {
-
     const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-
     if (!isAuthenticated) {
       navigate("/login");
     }
   }, [navigate, logoutTrigger]);
 
-
-
   const handleLogout = async () => {
-
-    const response = await userLogout(dispactch)
+    const response = await userLogout(dispatch);
     if (response.status === 200) {
-      localStorage.clear()
-      setLogoutTrigger(prev => !prev)
+      localStorage.clear();
+      setLogoutTrigger((prev) => !prev);
     }
+  };
 
-  }
+  const handleSearch = () => {
+    dispatch(setSearchTerm(searchInput));
+  };
 
   return (
     <header className="bg-blue-900 text-white p-4">
       <div className="container mx-auto flex items-center justify-between">
-
-
         <div className="flex items-center space-x-2 max-w-md w-full mx-auto">
-          <Input type="text" placeholder="Search any things" className="bg-white text-black rounded-md" />
-          <Button className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md">Search</Button>
+          <Input
+            type="text"
+            placeholder="Search any things"
+            className="bg-white text-black rounded-md"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+          <Button
+            className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md"
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -75,5 +78,5 @@ export function Header() {
 
       <WishlistSidebar isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />
     </header>
-  )
+  );
 }
