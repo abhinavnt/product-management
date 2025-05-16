@@ -16,4 +16,6 @@ router.post('/categories/:categoryId/subcategories',categoryController.createSub
 
 router.get('/categories',categoryController.getCategories)
 
+router.get("/categories-with-subcategories", categoryController.getCategoriesWithSubcategories);
+
 export default router;

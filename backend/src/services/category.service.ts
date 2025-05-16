@@ -4,6 +4,11 @@ import { TYPES } from "../di/types";
 import { ICategoryRepository } from "../core/interface/repository/ICategoryRepository";
 import { ICategory } from "../model/Category";
 
+// Extend ICategory to include subcategories for the response
+export interface ICategoryWithSubcategories extends ICategory {
+  subcategories: ICategory[];
+}
+
 @injectable()
 export class CategoryService implements ICategoryService {
   constructor(@inject(TYPES.CategoryRepository) private categoryReposiory: ICategoryRepository) {}
@@ -34,9 +39,19 @@ export class CategoryService implements ICategoryService {
     }
   }
 
+  //get all category
   async getCategories(): Promise<ICategory[]> {
     try {
       return await this.categoryReposiory.getCategories();
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  //get category with subcategory
+  async getCategoriesWithSubcategories(): Promise<ICategoryWithSubcategories[]> {
+    try {
+      return await this.categoryReposiory.getCategoriesWithSubcategories();
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error));
     }

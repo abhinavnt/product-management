@@ -26,4 +26,11 @@ export class CategoryController implements ICategoryController {
     const categories = await this.categoryService.getCategories();
     res.json(categories);
   });
+
+  getCategoriesWithSubcategories = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const categories = await this.categoryService.getCategoriesWithSubcategories();
+    console.log(categories,"categories iwth subcategories");
+    
+    res.status(200).json(categories);
+  });
 }

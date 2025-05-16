@@ -12,6 +12,12 @@ import { ICategoryService } from "../core/interface/service/ICategoryService";
 import { CategoryService } from "../services/category.service";
 import { ICategoryController } from "../core/interface/controller/ICategoryController";
 import { CategoryController } from "../controllers/category.controller";
+import { IProductRepository } from "../core/interface/repository/IProductRepository";
+import { ProductRepository } from "../repositories/product.repository";
+import { IProductService } from "../core/interface/service/IProductService";
+import { ProductService } from "../services/product.service";
+import { IProductController } from "../core/interface/controller/IProductController";
+import { ProductController } from "../controllers/product.controller";
 
 
 
@@ -27,6 +33,10 @@ container.bind<IAuthController>(TYPES.AuthController).to(AuthController)
 container.bind<ICategoryRepository>(TYPES.CategoryRepository).to(CategoryRepository)
 container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService)
 container.bind<ICategoryController>(TYPES.CategoryController).to(CategoryController)
+
+container.bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository)
+container.bind<IProductService>(TYPES.ProductService).to(ProductService)
+container.bind<IProductController>(TYPES.ProductController).to(ProductController)
 
 
 export default container
