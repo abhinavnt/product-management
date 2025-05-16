@@ -4,7 +4,9 @@ import { z } from "zod"
 
 import { EmailIcon, PasswordIcon } from "./Auth-icons"
 import { AuthForm } from "./Auth-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { login } from "@/services/authService"
+import { useDispatch } from "react-redux"
 
 // Validation schemas
 const emailSchema = z.string().email("Please enter a valid email address")
@@ -14,30 +16,25 @@ export function SignInForm() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState<string | undefined>()
 
+    const dispactch = useDispatch()
+
+    const navigate = useNavigate()
+
     const handleSignIn = async (data: Record<string, string>) => {
         setIsSubmitting(true)
         setError(undefined)
 
         try {
             // Make API call to sign in
-            const response = await fetch("/api/auth/signin", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: data.email,
-                    password: data.password,
-                }),
-            })
+            const response = await login(data.email, data.password, dispactch)
 
-            if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.message || "Failed to sign in")
+            if (response?.status !== 200 && response?.status !== 201) {
+                const errorData = response?.data
+                throw new Error(errorData?.message || "Failed to sign in")
             }
 
-            // Redirect or handle successful sign-in
-            window.location.href = "/dashboard"
+            navigate("/")
+
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred during sign in")
         } finally {
@@ -76,8 +73,8 @@ export function SignInForm() {
 
             <div className="mt-4 text-center">
                 <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-gray-800">
-          forgot password?
-        </Link>
+                    forgot password?
+                </Link>
             </div>
         </div>
     )

@@ -1,3 +1,4 @@
+import mongoose, { Mongoose } from "mongoose";
 import { BaseRepository } from "../core/abstracts/base.repository";
 import { IUserRepository } from "../core/interface/repository/IUserRepository";
 import { IUser, User } from "../model/User";
@@ -17,6 +18,10 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
 
   async findUserByEmail(email: string): Promise<IUser | null> {
       return this.findOne({email})
+  }
+
+  async findUserById(id: string): Promise<IUser | null> {
+      return this.findById( new mongoose.Types.ObjectId(id))
   }
 
   

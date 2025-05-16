@@ -6,3 +6,8 @@ export interface verifiedUer {
    refreshToken:string,
    user:IUser 
 }
+
+export interface refreshedUser {
+    accessToken:string,
+    user: IUser 
+}
