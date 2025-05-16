@@ -2,6 +2,7 @@ import mongoose, { Mongoose } from "mongoose";
 import { BaseRepository } from "../core/abstracts/base.repository";
 import { ICategoryRepository } from "../core/interface/repository/ICategoryRepository";
 import { Category, ICategory } from "../model/Category";
+import { ICategoryWithSubcategories } from "../services/category.service";
 
 export class CategoryRepository extends BaseRepository<ICategory> implements ICategoryRepository {
   constructor() {
@@ -37,5 +38,29 @@ export class CategoryRepository extends BaseRepository<ICategory> implements ICa
   //get all parent category
   async getCategories(): Promise<ICategory[]> {
     return this.find({ parentId: null }).exec();
+  }
+
+  //find category byid
+  async findCategoryById(id: string): Promise<ICategory | null> {
+    return await this.findById(new mongoose.Types.ObjectId(id));
+  }
+
+  //get category with subcategory
+  async getCategoriesWithSubcategories(): Promise<ICategoryWithSubcategories[]> {
+  const categories = await this.aggregate([
+    {
+      $match: { parentId: null }, 
+    },
+    {
+      $lookup: {
+        from: "categories", 
+        localField: "_id",
+        foreignField: "parentId",
+        as: "subcategories",
+      },
+    },
+  ])
+
+  return categories as ICategoryWithSubcategories[];
   }
 }

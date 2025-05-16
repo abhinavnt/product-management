@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/errorMiddleware";
 const rfs = require("rotating-file-stream");
 import authRoutes from "./routes/auth.route" 
 import categoryRoutes from "./routes/category.route"
+import productRoutes from "./routes/product.route"
 
 dotenv.config();
 connectDB();
@@ -52,7 +53,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/category",categoryRoutes)
-
+app.use("/api/product",productRoutes)
 
 
 app.use(errorHandler);

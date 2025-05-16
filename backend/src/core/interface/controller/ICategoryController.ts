@@ -5,4 +5,5 @@ export interface ICategoryController{
     createCategory:RequestHandler
     createSubCategory:RequestHandler
      getCategories:RequestHandler
+     getCategoriesWithSubcategories:RequestHandler
 }
