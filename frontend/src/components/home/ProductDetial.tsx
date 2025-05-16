@@ -4,6 +4,7 @@ import { Heart, Minus, Plus, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import axiosInstance from "@/utils/axiosInstance";
+import { EditProductModal } from "../modals/Edit-product-modal";
 
 interface ProductDetail {
     id: string;
@@ -17,6 +18,7 @@ interface ProductDetail {
         quantity: number;
     }[];
     inStock?: boolean;
+    subcategory: { _id: string; name: string; parentId: string };
 }
 
 export default function ProductDetailPage() {
@@ -28,20 +30,20 @@ export default function ProductDetailPage() {
     const [selectedImage, setSelectedImage] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 setLoading(true);
-                
                 const response = await axiosInstance.get(`/api/product/${id}`);
                 console.log("API Response:", response.data);
-
                 const productData: ProductDetail = {
                     ...response.data,
                     id: response.data._id,
                     inStock: response.data.variants?.some((v: any) => v.quantity > 0) ?? false,
                     price: response.data.variants?.[0]?.price ?? 0,
+                    subcategory: response.data.subcategory,
                 };
                 setProduct(productData);
                 setSelectedImage(productData.images[0] || "/placeholder.svg");
@@ -53,10 +55,7 @@ export default function ProductDetailPage() {
                 setLoading(false);
             }
         };
-
-        if (id) {
-            fetchProduct();
-        }
+        if (id) fetchProduct();
     }, [id]);
 
     const handleQuantityChange = (value: number) => {
@@ -71,20 +70,13 @@ export default function ProductDetailPage() {
         if (product) {
             const variant = product.variants?.find((v) => v.ram === ram);
             if (variant) {
-                setProduct({
-                    ...product,
-                    price: variant.price,
-                });
+                setProduct({ ...product, price: variant.price });
             }
         }
     };
 
     const handleBuyNow = () => {
-        console.log("Buy now clicked", {
-            productId: id,
-            quantity,
-            selectedRam,
-        });
+        console.log("Buy now clicked", { productId: id, quantity, selectedRam });
     };
 
     const toggleWishlist = () => {
@@ -239,7 +231,11 @@ export default function ProductDetailPage() {
                         </div>
 
                         <div className="flex flex-wrap gap-4">
-                            <Button variant="outline" className="flex-1">
+                            <Button
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => setIsEditModalOpen(true)}
+                            >
                                 Edit product
                             </Button>
                             <Button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white" onClick={handleBuyNow}>
@@ -264,6 +260,14 @@ export default function ProductDetailPage() {
                     )}
                 </div>
             </div>
+
+            {isEditModalOpen && (
+                <EditProductModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    product={product}
+                />
+            )}
         </div>
     );
 }

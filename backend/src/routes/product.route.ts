@@ -16,4 +16,6 @@ router.get('/products',productController.getProducts)
 
 router.get("/:id", productController.getProductById);
 
+router.put("/:id", upload.array("newImages", 4), productController.updateProduct);
+
 export default router;
