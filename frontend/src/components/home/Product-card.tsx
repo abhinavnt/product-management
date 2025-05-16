@@ -1,29 +1,52 @@
-"use client"
-
 import type React from "react"
-
 import { Heart } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import type { Product } from "@/types/product"
 import { useNavigate } from "react-router-dom"
+import axiosInstance from "@/utils/axiosInstance"
+import { useAppSelector } from "@/redux/store"
 
 interface ProductCardProps {
   product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const navigate = useNavigate()
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
+  // Fetch initial wishlist status when component mounts
+  useEffect(() => {
+    const fetchWishlistStatus = async () => {
+      try {
+        const { data } = await axiosInstance.get(`/api/wishlist/${user?._id}`);
+        const wishlisted = data.products.includes(product.id);
+        setIsWishlisted(wishlisted);
+      } catch (error) {
+        console.error("Failed to fetch wishlist", error);
+      }
+    };
+    fetchWishlistStatus();
+  }, [product.id]);
 
   const handleCardClick = () => {
-    navigate(`/product/${product.id}`)
-  }
+    navigate(`/product/${product.id}`);
+  };
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent card click when clicking wishlist
-    setIsWishlisted(!isWishlisted)
-  }
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      if (isWishlisted) {
+        await axiosInstance.delete(`/api/wishlist/${product.id}/${user?._id}`);
+        setIsWishlisted(false);
+      } else {
+        await axiosInstance.post(`/api/wishlist/${product.id}/${user?._id}`);
+        setIsWishlisted(true);
+      }
+    } catch (error) {
+      console.error("Failed to update wishlist", error);
+    }
+  };
 
   return (
     <div
@@ -53,5 +76,5 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="text-center font-semibold mb-2">${product.price.toFixed(2)}</div>
       </div>
     </div>
-  )
+  );
 }

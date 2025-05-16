@@ -1,8 +1,9 @@
 export interface Product {
+  _id?:string
   id: string
   title: string
   price: number
-  image: string
+  images: string
   rating: number
   variants?: ProductVariant[]
   category?: string
